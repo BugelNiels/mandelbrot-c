@@ -76,13 +76,15 @@ void moveDown(PlaneDimension* dim) {
 }
 
 void printMenu() {
+	printf("What would you like to do?\n");
 	printf(" (1) Zoom in\n");
 	printf(" (2) Zoom out\n");	
 	printf(" (3) Left\n");
 	printf(" (4) Right\n");
 	printf(" (5) Up\n");
 	printf(" (6) Down\n");
-	printf(" (7) Increase iterations\n");
+	printf(" (7) Double iterations\n");
+	printf(" (8) Halve iterations\n");
 	printf(" (0) Exit\n");
 }
 

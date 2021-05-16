@@ -6,14 +6,13 @@
 #include "interaction.h"
 
 void runInteractiveProgram(double complex** complexPlane, int** iterPlane, int width, int height) {
-	int maxIter;
-	int skipLines = height + 15;
+	int maxIter, inputItems;
+	int skipLines = height + 16;
 	printf("Maximum number of iterations:\n");
-	scanf("%d", &maxIter);
+	inputItems = scanf("%d", &maxIter);
 	PlaneDimension dim = {-2.2, 1.0, 1.0, -1.0};
 
 	int userInput = 1;
-	int inputItems = 1;
 	while(userInput > 0 && inputItems > 0) {
 		printMenu();
 		printf("Calculating Mandelbrot set with %d iterations...\n", maxIter);
@@ -34,6 +33,7 @@ void runInteractiveProgram(double complex** complexPlane, int** iterPlane, int w
 			case 5: moveUp(&dim); break;
 			case 6: moveDown(&dim); break;
 			case 7: maxIter *= 2; break;
+			case 8: maxIter /= 2; break;
 			default: printf("Invalid command");
 		}
 		printf("\n");
@@ -44,6 +44,7 @@ void runInteractiveProgram(double complex** complexPlane, int** iterPlane, int w
 }
 
 int main(int argc, char *argv[]) {
+	printf("\033[2J");
 	int width = 80, height = 30;
 	omp_set_num_threads(8);
 	double complex** complexPlane = allocComplexPlane(width, height);
