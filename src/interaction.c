@@ -57,23 +57,22 @@ void moveLeft(PlaneDimension* dim) {
 }
 
 void moveRight(PlaneDimension* dim) {
-	double iDif = (dim->imStart - dim->imEnd) * 0.1;
-	dim->imStart += iDif;
-	dim->imEnd += iDif;
+	double rDif = (dim->realEnd - dim->realStart) * 0.1;
+	dim->realStart += rDif;
+	dim->realEnd += rDif;
 
 }
 
 void moveUp(PlaneDimension* dim) {
-	double rDif = (dim->realEnd - dim->realStart) * 0.1;
-	dim->realStart += rDif;
-	dim->realEnd += rDif;
+	double iDif = (dim->imStart - dim->imEnd) * 0.1;
+	dim->imStart -= iDif;
+	dim->imEnd -= iDif;
 }
 
 void moveDown(PlaneDimension* dim) {
 	double iDif = (dim->imStart - dim->imEnd) * 0.1;
-	dim->imStart -= iDif;
-	dim->imEnd -= iDif;
-
+	dim->imStart += iDif;
+	dim->imEnd += iDif;
 }
 
 void printMenu() {
@@ -88,11 +87,11 @@ void printMenu() {
 }
 
 void showIterPlane(int** iterPlane, int width, int height, int maxIter) {
-	double maxIterd = maxIter;
+	double maxIterLog = log(maxIter);
 	for (int i = 0; i < height; ++i) {
 		for (int r = 0; r < width; ++r) {
-			double per = log(iterPlane[i][r]) / log(maxIterd);
-			int greyVal = (int) (per * 255);
+			double per = log(iterPlane[i][r]) / maxIterLog;
+			int greyVal = per * 255;
 			// printf("%lf, %d %d\n", per, greyVal, iterPlane[i][r]);
 			greyScale(greyVal);
 			putchar(' ');	
@@ -105,6 +104,6 @@ void showIterPlane(int** iterPlane, int width, int height, int maxIter) {
 			// }
 		}
 		resetColor();
-		printf("\n");
+		putchar('\n');
 	}
 }

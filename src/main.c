@@ -10,7 +10,7 @@ void runInteractiveProgram(double complex** complexPlane, int** iterPlane, int w
 	int skipLines = height + 15;
 	printf("Maximum number of iterations:\n");
 	scanf("%d", &maxIter);
-	PlaneDimension dim = {-2.0, 1.0, 1.0, -1.0};
+	PlaneDimension dim = {-2.2, 1.0, 1.0, -1.0};
 
 	int userInput = 1;
 	int inputItems = 1;
@@ -44,7 +44,7 @@ void runInteractiveProgram(double complex** complexPlane, int** iterPlane, int w
 }
 
 int main(int argc, char *argv[]) {
-	int width = 90, height = 30;
+	int width = 80, height = 30;
 	omp_set_num_threads(8);
 	double complex** complexPlane = allocComplexPlane(width, height);
 	int** iterPlane = allocIterPlane(width, height);

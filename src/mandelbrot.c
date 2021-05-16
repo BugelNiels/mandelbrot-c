@@ -51,13 +51,36 @@ int getIterations(double complex c, int maxIter) {
 	return iter;
 }
 
+int isInPeriod2Bulb(double complex c) {
+	double rc = creal(c);
+	double ic = cimag(c);
+	return (rc + 1) * (rc + 1) + ic * ic < 1/16.0;
+}
+
+
+int isInMainCardioid(double complex c) {
+	double rc = creal(c);
+	double ic = cimag(c);
+	double ic2 = ic * ic;
+	double rc25 = rc - 0.25;
+	double q = rc25*rc25 + ic2;
+	return q*(q + rc25) < 0.25 * ic2;
+}
+
 void mandelBrot(int** iterPlane, double complex** complexPlane, int width, int height, int maxIter) {
 	Timer timer;
 	startTime(&timer);
 	#pragma omp parallel for
 	for (int i = 0; i < height; ++i) {
 		for (int r = 0; r < width; ++r) {
-			iterPlane[i][r] = getIterations(complexPlane[i][r], maxIter);
+			int iter;
+			double complex c = complexPlane[i][r];
+			if(isInMainCardioid(c) || isInPeriod2Bulb(c)) {
+				iter = maxIter;
+			} else {
+				iter = getIterations(complexPlane[i][r], maxIter);
+			}
+			iterPlane[i][r] = iter;
 		}
 	}
 	stopTime(&timer); 
