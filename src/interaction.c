@@ -10,10 +10,24 @@ void resetColor() {
 
 }
 
-void greyScale(int val) {
-	printf("\033[48;2;%d;%d;%dm", val, val, val);
-	printf("\033[38;2;%d;%d;%dm", val, val, val);
+void greyScale(int i, int maxIter) {
+	double maxIterLog = log(maxIter);
+	double per = log(i) / maxIterLog;
+	int greyVal = per * 255;
+	printf("\033[48;2;%d;%d;%dm", greyVal, greyVal, greyVal);
+}
 
+int getVal(int i, int m, int* c) {
+	if(i >= m) {
+		return 0;
+	} else {
+		return 255u * (sin(0.1 * i + (*c)++) / 2.0 + 0.5);
+	}
+}
+
+void colorScale(int i, int m) {
+	int c = 4;
+	printf("\033[48;2;%d;%d;%dm", getVal(i, m, &c), getVal(i, m, &c), getVal(i, m, &c));
 }
 
 void black() {
@@ -88,22 +102,25 @@ void printMenu() {
 	printf(" (0) Exit\n");
 }
 
-void showIterPlane(int** iterPlane, int width, int height, int maxIter) {
-	double maxIterLog = log(maxIter);
+void printColorMenu() {
+	printf("Color scale?\n");
+	printf(" (0) greyscale\n");
+	printf(" (1) colorsss\n");	
+}
+
+void putElem(int type, int i, int m) {
+	switch(type) {
+		case 0: greyScale(i, m); break;
+		case 1: colorScale(i, m); break;
+	}
+	putchar(' ');	
+}
+
+void showIterPlane(int** iterPlane, int width, int height, int maxIter, int type) {
+	
 	for (int i = 0; i < height; ++i) {
 		for (int r = 0; r < width; ++r) {
-			double per = log(iterPlane[i][r]) / maxIterLog;
-			int greyVal = per * 255;
-			// printf("%lf, %d %d\n", per, greyVal, iterPlane[i][r]);
-			greyScale(greyVal);
-			putchar(' ');	
-			// if(iterPlane[i][r] < maxIter) {
-			// 	black();
-			// 	putchar(' ');	
-			// } else {		
-			// 	white();
-			// 	putchar('#');	
-			// }
+			putElem(type, iterPlane[i][r], maxIter);
 		}
 		resetColor();
 		putchar('\n');
