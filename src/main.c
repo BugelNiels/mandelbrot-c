@@ -1,71 +1,58 @@
+#include <complex.h>
+#include <math.h>
+#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <complex.h>
 
-#include "interaction.h"
+#include "interactions/inputHandler.h"
+#include "interactions/menu.h"
+#include "mandelbrot/mandelbrot.h"
+#include "utils/printUtils.h"
+#include "view/mandelbrotView.h"
 
-void runInteractiveProgram(double complex** complexPlane, int** iterPlane, int width, int height) {
-	int maxIter, inputItems, type;
-	int skipLines = height + 16;
-	printColorMenu();
-	inputItems = scanf("%d", &type);
-	if(inputItems == 0) {
-		printf("Invalid input\n");
-		return;
-	}
-	printf("Maximum number of iterations:\n");
-	inputItems = scanf("%d", &maxIter);
-	if(inputItems == 0) {
-		printf("Invalid input\n");
-		return;
-	}
-	PlaneDimension dim = {-2.2, 1.0, 1.0, -1.0};
+/**
+ * @brief Interactive Mandelbrot Program. Draws the menu and the Mandelbrot set
+ * 
+ * @param complexPlane Complex Plane
+ * @param iterPlane Iteration Plane
+ * @param dims Dimensions of the image and complex plane
+ */
+void runInteractiveProgram(double complex** complexPlane, int** iterPlane, PlaneDimensions dims) {
+    int skipLines = dims.height + 4;
+    int colorType = colorMenu();
+    int maxIter = maxIterationsMenu();
 
-	int userInput = 1;
-	while(userInput > 0 && inputItems > 0) {
-		printMenu();
-		printf("Calculating Mandelbrot set with %d iterations...\n", maxIter);
-		calcMandelbrot(complexPlane, iterPlane, width, height, maxIter, dim);
+    int running = 1;
+    showInteractiveMenu();
+    while (running > 0) {
+        calcMandelbrot(complexPlane, iterPlane, maxIter, dims);
+        displayMandelbrotSet(iterPlane, maxIter, colorType, dims);
 
-		showIterPlane(iterPlane, width, height, maxIter, type);
-		inputItems = scanf("%d", &userInput);
-		char c = getchar();
-		printf("%c\n", c);
-
-
-		switch(userInput) {
-			case 0: return;
-			case 1: zoomIn(&dim); break;
-			case 2: zoomOut(&dim); break;
-			case 3: moveLeft(&dim); break;
-			case 4: moveRight(&dim); break;
-			case 5: moveUp(&dim); break;
-			case 6: moveDown(&dim); break;
-			case 7: maxIter *= 2; break;
-			case 8: maxIter /= 2; break;
-			default: printf("Invalid command");
-		}
-		printf("\n");
-		printf("\033[2J");
-		printf("\033[%dA", skipLines);
-		// move up 39 lines; TODO: make dynamic
-	}
+        int userInput = readInteger();
+        handleUserInput(userInput, &dims, &maxIter, &running);
+        moveCursorUp(skipLines);
+    }
 }
 
-int main(int argc, char *argv[]) {
-	printf("\033[2J");
-	// int width = 150, height = 50;
-	int width = 80, height = 30;
-	omp_set_num_threads(8);
-	double complex** complexPlane = allocComplexPlane(width, height);
-	int** iterPlane = allocIterPlane(width, height);
-	
-	runInteractiveProgram(complexPlane, iterPlane, width, height);
-	
-	freeComplexMatrix(complexPlane, height);
-	freeIntMatrix(iterPlane, height);
-	printf("\033[2J");
-	printf("Exiting program\n");
+/**
+ * @brief Entry point of the program. Starts an interactive menu to set up the Mandelbrot calculations.
+ * 
+ * @param argc Argument count
+ * @param argv Arguments
+ * @return int Exit code
+ */
+int main(int argc, char* argv[]) {
+    clearScreen();
+    PlaneDimensions dims = initDefaultPlaneDimensions();
+    omp_set_num_threads(8);
+    double complex** complexPlane = allocComplexPlane(dims);
+    int** iterPlane = allocIterPlane(dims);
+
+    runInteractiveProgram(complexPlane, iterPlane, dims);
+
+    freeComplexMatrix(complexPlane, dims.height);
+    freeIntMatrix(iterPlane, dims.height);
+    clearScreen();
+    printf("Exiting program\n");
     return 0;
 }

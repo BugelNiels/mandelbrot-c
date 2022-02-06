@@ -50,3 +50,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+mandelbrot
+!mandelbrot/
+!mandelbrot*
+mandelbrot.o
+
+.vscode/
